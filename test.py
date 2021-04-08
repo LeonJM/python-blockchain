@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import json
 from flask import Flask, jsonify
+from pyp2p.net import *
 
 class Blockchain:
 
