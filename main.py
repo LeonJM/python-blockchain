@@ -43,7 +43,7 @@ class Blockchain:
 
     
     def proof_of_work(self, previous_proof):
-        new_proof = 1
+        new_proof = 0
         check_proof = False
 
         while check_proof is False:
@@ -86,52 +86,19 @@ class Blockchain:
 
         return True         
 
-'''
-def mine(blockchain):
-    time = datetime.datetime.now()
-    previous_block = blockchain.previous_block()
-    
-    previous_proof = previous_block['proof']
-    proof = blockchain.proof_of_work(previous_proof)
-
-    previous_hash = blockchain.hash(previous_block)
-    
-    blockchain.new_transaction('God', 'Miner', 1)
-    block = blockchain.create_block(proof, previous_hash)
-    print(json.dumps(block, indent=4))
-    print(f"time taken: {datetime.datetime.now() - time}")
-    
-
-if __name__ == '__main__':
-    blockchain = Blockchain()
-
-    blockchain.new_transaction('Alice', 'Bob', 40)
-    mine(blockchain)
-
-    blockchain.new_transaction('Charlie', 'Bob', 200)
-    blockchain.new_transaction('Bob', 'Alice', 320)
-    mine(blockchain)
-
-    blockchain.new_transaction('Charlie', 'Alice', 500)
-    blockchain.new_transaction('Charlie', 'Alice', 100)
-    blockchain.new_transaction('Charlie', 'Bob', 100)
-    blockchain.new_transaction('Charlie', 'Dave', 100)
-    blockchain.new_transaction('Dave', 'Alice', 40)
-    mine(blockchain)
-
-    print(f"\n{blockchain.chain_valid()}")
-'''
 
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 blockchain = Blockchain()
 
+
 @app.route('/')
 def start():
     response = 'Welcome to fakecoin'
 
     return response, 200
+
 
 '''
 @app.route('/transactions/new', methods=['POST'])

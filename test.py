@@ -1,83 +1,107 @@
+import socket
+import threading
+import time
 import datetime
-import hashlib
-import json
-from flask import Flask, jsonify
-from pyp2p.net import *
+import sys
 
-class Blockchain:
+ENCODING = "utf-8"
+MIN_PORT = 2000
+MAX_PORT = 2005
+NODE_CAPACITY = 50
+#HOST = socket.gethostbyname(socket.gethostname())
+HOST = '127.0.0.1'
+SOCKS = []
+
+
+class Receiver(threading.Thread):
+
+    def __init__(self, my_port):
+        threading.Thread.__init__(self, name="receiver")
+        self.my_port = my_port
+
+
+    def run(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind((HOST, self.my_port))
+        sock.listen(NODE_CAPACITY)
+
+        while True:
+            time.sleep(1)
+            print("receiver says hello")
+            # conn, addr = sock.accept()
+            # message = ""
+            # try: 
+            #     while True:
+            #         data = conn.recv(16)
+            #         message += data.decode(ENCODING)
+            #         if not data:
+            #             print(f"{addr}: {message.strip()}")
+            #             break
+            # finally:
+            #     conn.shutdown(2)
+            #     conn.close()
+
+
+class Sender(threading.Thread):
+
+    def __init(self):
+        threading.Thread.__init__(self, name="sender")
+
+
+    def run(self):
+        while True:
+            time.sleep(1)
+            print("sender saying sup")
+            # message = input("")
+            # if message == "quit":
+            #     sys.exit(1)
+            # if message: 
+            #     for sock in SOCKS:
+            #         sock.sendall(message.encode(ENCODING))
+
+
+class Helper(threading.Thread):
 
     def __init__(self):
-        self.chain = []
-        self.pending_transactions = []
-        self.create_block(proof=100, previous_hash='0') # genesis block
+        threading.Thread.__init__(self, name="helper")
 
     
-    def create_block(self, proof, previous_hash):
-        block = {
-            'index': len(self.chain),
-            'timestamp': str(datetime.datetime.now()),
-            'transactions': self.pending_transactions,
-            'proof': proof,
-            'previous_hash': previous_hash
-        }
-        self.chain.append(block)
-        self.pending_transactions = []
-        return block
-
-    
-    def new_transaction(self, sender, recipent, amount):
-        self.pending_transactions.append({
-            'sender': sender,
-            'recipent': recipent,
-            'amount': amount
-        })
-    
-
-    def previous_block(self):
-        return self.chain[-1]
-
-    
-    def proof_of_work(self, previous_proof):
-        difficulty = 4
-        new_proof = 1
-        check_proof = False
-
-        while check_proof is False:
-            guess = str(new_proof**2 - previous_proof**2).encode()
-            guess_hash = hashlib.sha256(guess).hexdigest()
-
-            if guess_hash[:difficulty] == '0' * difficulty:
-                check_proof = True
-            else:
-                new_proof += 1
-    
-        return new_proof
-
-    
-    def hash(self, block):
-        encoded_block = json.dumps(block, sort_keys=True).encode()
-        return hashlib.sha256(encoded_block).hexdigest()
+    def create_socket(self, port_number):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.connect((HOST, port_number))
+        return sock
 
 
-def mine(blockchain):
-    previous_block = blockchain.previous_block()
-    
-    previous_proof = previous_block['proof']
-    proof = blockchain.proof_of_work(previous_proof)
+    def run(self):
+        while True:
+            for port_number in range(MIN_PORT, MAX_PORT):
+                try:
+                    SOCKS.append(self.create_socket(port_number))
+                    print("-"*30+"NEW CONNECTION"+"-"*30)
+                    print(port_number)
+                except Exception:
+                    pass
 
-    previous_hash = blockchain.hash(previous_block)
-    
-    block = blockchain.create_block(proof, previous_hash)
+
+def main():
+    my_port = 2000 + int(input("Enter port: "))
+    receiver = Receiver(my_port)
+    sender = Sender()
+    helper = Helper()
+
+    print(f"Welcome to fakecoin, you are on port {my_port}")
+
+    thread = [
+        receiver.start(),
+        sender.start(),
+        helper.start()
+    ]
     
 
-if __name__ == '__main__':
-    blockchain = Blockchain()
+if __name__ == "__main__":
+    main()
 
-    blockchain.new_transaction('Alice', 'Bob', 40)
-    mine(blockchain)
+    
 
-    blockchain.new_transaction('Charlie', 'Bob', 200)
-    blockchain.new_transaction('Bob', 'Alice', 320)
-    mine(blockchain)
-
-    print(json.dumps(blockchain.chain, indent=4))
+    
