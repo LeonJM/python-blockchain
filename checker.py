@@ -21,7 +21,8 @@ class Checker(threading.Thread):
 
                 except:
                     pass
-
+        
+        Nodes.start = False
         
     def fix_connections(self):
         temp = dict.fromkeys(Nodes.neighbours)

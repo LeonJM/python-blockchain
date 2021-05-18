@@ -9,9 +9,8 @@ def main():
     
     receiver = Receiver()
     checker = Checker()
-    sender = Sender()
+    sender = Sender()   #also acts as a user interface
 
-    print("loading... checking neighbours")
     threads = [
         receiver.start(),
         checker.start(),

@@ -13,6 +13,7 @@ REQUEST = "req"
 SHARE = "shr"
 
 class Nodes:
+    start = True
     my_port = -1
     neighbours = []
 
