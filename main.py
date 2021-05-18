@@ -11,6 +11,7 @@ def main():
     checker = Checker()
     sender = Sender()
 
+    print("loading... checking neighbours")
     threads = [
         receiver.start(),
         checker.start(),
