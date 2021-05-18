@@ -2,9 +2,6 @@ from server_client.constants import *
 from server_client.client import Client
 from server_client.server import Server
 
-class nodes:
-    peers = ['127.0.0.1']
-
 
 def main():
     

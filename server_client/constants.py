@@ -16,3 +16,6 @@ PORT = 5000
 PEER_BYTE_DIFFERENTIATOR = b'\x11'
 REQUEST_STRING = "req"
 ENCODING = "utf-8"
+
+class nodes:
+    peers = ['127.0.0.1']
