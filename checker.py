@@ -4,6 +4,7 @@ class Checker(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self, name="door_to_door_salesperson")
+        self.daemon = True
 
 
     def find_connections(self):
@@ -24,6 +25,7 @@ class Checker(threading.Thread):
         
         Nodes.start = False
         
+    
     def fix_connections(self):
         temp = dict.fromkeys(Nodes.neighbours)
         Nodes.neighbours = list(temp)

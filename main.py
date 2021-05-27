@@ -2,6 +2,7 @@ from constants import *
 from receiver import *
 from sender import *
 from checker import *
+from blockchain import *
 
 
 def main():

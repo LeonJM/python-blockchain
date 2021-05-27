@@ -1,7 +1,7 @@
 import datetime
 import hashlib
 import json
-from flask import Flask, jsonify, request
+import re
 
 class Blockchain:
 
@@ -87,70 +87,60 @@ class Blockchain:
         return True         
 
 
-app = Flask(__name__)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+def main():
+    blockchain = Blockchain()
+    print("Welcome to Cheapcoin")
+    while True:
+        command = input("")
+        if command == "mine":
+                previous_block = blockchain.previous_block()
 
-blockchain = Blockchain()
+                previous_proof = previous_block['proof']
+                current_proof = blockchain.proof_of_work(previous_proof)
 
+                previous_hash = blockchain.hash(previous_block)
 
-@app.route('/')
-def start():
-    response = 'Welcome to fakecoin'
+                blockchain.new_transaction('God', 'Miner', 1)
+                block = blockchain.create_block(current_proof, previous_hash)
 
-    return response, 200
+                response = {
+                    'message': 'MINED',
+                    'index': block['index'],
+                    'timestamp': block['timestamp'],
+                    'proof': block['proof'],
+                    'previous_hash': block['previous_hash'],
+                    'hash': blockchain.hash(block)
+                }
 
+                print(json.dumps(response, indent = 4))
 
-'''
-@app.route('/transactions/new', methods=['POST'])
-def new_transaction():
-    values = request.get_json()
-    print(values)
+        elif command == "chain":
+                response = {
+                    'chain': blockchain.chain
+                }
 
-    return 'test', 201
-'''
+                print(json.dumps(response, indent = 4))
 
+        elif command == "valid":
+            valid = blockchain.chain_valid()
 
-@app.route('/mine', methods=['GET'])
-def mine():
-    previous_block = blockchain.previous_block()
+            if valid:
+                print('The blockchain is valid.')
+            else:
+                print('The blockchain is NOT valid.')
 
-    previous_proof = previous_block['proof']
-    current_proof = blockchain.proof_of_work(previous_proof)
+        elif len(command.split()) == 4:
+            command = command.split()
+            if command[1] != "send" or not command[3].isnumeric():
+                print("not a command")
+                continue
+            
+            blockchain.new_transaction(command[0], command[2], command[3])
+            print("transaction put through")
 
-    previous_hash = blockchain.hash(previous_block)
+        else:
+            print("not a command")
+                
 
-    blockchain.new_transaction('God', 'Miner', 1)
-    block = blockchain.create_block(current_proof, previous_hash)
-
-    response = {
-        'message': 'MINED',
-        'index': block['index'],
-        'timestamp': block['timestamp'],
-        'proof': block['proof'],
-        'previous_hash': block['previous_hash'],
-        'hash': blockchain.hash(block)
-    }
-
-    return jsonify(response), 200
-
-
-@app.route('/chain', methods=['GET'])
-def chain():
-    response = {
-        'chain': blockchain.chain,
-    }
-
-    return jsonify(response), 200
-
-
-@app.route('/valid', methods=['GET'])
-def valid():
-    valid = blockchain.chain_valid()
-
-    if valid:
-        return 'The blockchain is valid.'
-    else:
-        return 'The blockchain is NOT valid.'
-
-
-app.run(host='127.0.0.1', port=5000)
+if __name__ == "__main__":
+    main()

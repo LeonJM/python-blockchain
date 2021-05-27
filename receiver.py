@@ -4,6 +4,7 @@ class Receiver(threading.Thread):
  
     def __init__(self):
         threading.Thread.__init__(self, name="messenger_receiver")
+        self.daemon = True
 
 
     def listen(self):
@@ -28,6 +29,13 @@ class Receiver(threading.Thread):
                             print(f"Connection received from port {port}")
                             break
                         
+                        if full_message[:1] == QUIT:
+                            port = int(full_message[1:])
+                            if port in Nodes.neighbours:
+                                Nodes.neighbours.remove(port)
+                            print(f"Disconnected from port {port}")   
+                            break                         
+                        
                         elif data:
                             print("{}: {}".format(client_address, full_message.strip()))
                             break
@@ -40,6 +48,7 @@ class Receiver(threading.Thread):
     def run(self):
         self.listen()
  
+
 
 
           

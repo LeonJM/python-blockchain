@@ -1,7 +1,10 @@
 import socket
 import threading
 import sys
-import time
+import datetime
+import hashlib
+import json
+import atexit
 
 MIN_PORT = 1
 MAX_PORT = 10
@@ -10,7 +13,8 @@ ENCODING = "utf-8"
 CAPACITY = 50
 HOST = socket.gethostbyname(socket.gethostname())
 REQUEST = "req"
-SHARE = "shr"
+SHARE = "shr" #not used
+QUIT = "q"
 
 class Nodes:
     start = True
